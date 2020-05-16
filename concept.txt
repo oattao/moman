@@ -1,7 +1,0 @@
-model managements:
-
-1. User interface for training model
-2. management
-3. dynamic traning
-
-https://code.visualstudio.com/docs/containers/quickstart-python
