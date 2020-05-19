@@ -61,8 +61,8 @@
     </div>
 
     <div id="training" style="display: none">
-        <p style="color: red"> Model is being trained. Don't do anything.</p>
-        <img src="static/training.gif" width="50px">
+        <p style="color: red; display: inline-block;"> Model is being trained. Don't do anything.</p>
+        <img style="display: inline-block;" src="static/training.gif" width="50px">
     </div>
 </form>
 
@@ -111,8 +111,8 @@
 
             var chartLoss = new CanvasJS.Chart("lossHistory", {
                 title: {text: "Loss history"},
-                axisX: {title: "Epoch"},
-                axisY: {title: "Loss value", minimum: 0, maximum: 5},
+                axisX: {title: "Epoch", interval: 1, minimum:0},
+                axisY: {title: "Loss value", minimum: 0, maximum: 2},
                 legend: {cursor: "pointter", fontSize: 16},
                 data: [{name: "Validation loss", type: "line", dataPoints: vL, showInLegend: true},
                        {name: "Training loss", type: "line", dataPoints: tL, showInLegend: true}]
@@ -120,7 +120,7 @@
 
             var chartAcc = new CanvasJS.Chart("accHistory", {
                 title: {text: "Accuracy history"},
-                axisX: {title: "Epoch"},
+                axisX: {title: "Epoch", interval: 1, minimum: 0},
                 axisY: {title: "Accuracy (%)", minimum: 0, maximum: 100},
                 legend: {cursor: "pointter", fontSize: 16},
                 data: [{name: "Validation accuracy", type: "line", dataPoints: vA, showInLegend: true},
