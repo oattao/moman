@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+	<div class="sidenav">
+	  <a href="{{ url_for('index') }}">Train model</a>
+	  <a href="{{ url_for('manage_models') }}">Manage models</a>
+	  <a href="{{ url_for('predict_route') }}">Predict</a>
+	</div>
+
+	<div id="content" class="main">
+	   	<div id="showfolder" style="margin-left: 50px">
+	   		<div style="width: 300px; display: inline-block; vertical-align: top">
+                {% if data_status == 0 %}
+                <p>Image folder</p>
+                <select id="select" name="folder" action="/">
+                    {% for subfolder in folder %}
+                    <option value="{{ subfolder }}" SELECTED > {{ subfolder }} </option>
+                    {% endfor %}
+                    {% else %}
+                    <p style="color: red">Some error in image folder. Check it.</p>
+                     {% endif %}
+                </select>
+            </div>
+		</div>
+	</div>
+
+</body>
+</html>

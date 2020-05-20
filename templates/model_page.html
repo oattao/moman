@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+	<div class="sidenav">
+	  <a href="{{ url_for('index') }}">Train model</a>
+	  <a href="{{ url_for('predict_route') }}">Predict</a>
+	  <a href="{{ url_for('image_route') }}">Manage data</a>
+	</div>
+
+	<div id="content" class="main">
+	   	<div id="showfolder" style="margin-left: 50px">
+	   		<div style="width: 300px; display: inline-block; vertical-align: top">
+                {% if num_models > 0 %}
+                <p>Trained models</p>
+				<select name="model">
+					{% for model in models %}
+					<option value="{{ model }}" SELECTED > {{ model }} </option>
+					{% endfor %}
+				</select><br>
+				{% else %}
+				<p class="warningtext">No pretrained model.</p>
+				{% endif %}
+            </div>
+		</div>
+	</div>
+</body>
+</html>

@@ -13,14 +13,13 @@ from utils.data import create_dataframe, ImageGenerator
 from configs.image import IMAGE_SIZE2, IMAGE_SIZE3, DATA_PATH
 from configs.server import BASE_MODELS, MODEL_PATH
 
-def load_model(model_path, h5_file_name='HKMold_AI.h5'):
+import pdb
+
+def load_model(models):
     print('Loading models...')
     model_list = dict()
-    for name in SUPPORTED_MODELS:
-        if name != 'teachable_machine':
-            model_list[name] = tf.keras.models.load_model(os.path.join(model_path, name))
-        else:
-            model_list[name] = tf.keras.models.load_model(os.path.join(model_path, name, h5_file_name))
+    for name in models:
+        model_list[name] = tf.keras.models.load_model(os.path.join(MODEL_PATH, name))
     print('All models loaded. Ready to serve.')
     return model_list
 
@@ -115,7 +114,6 @@ def train_model(model_name, image_folder, num_epochs, learning_rate):
     history = model.fit(x=generator['train'], validation_data=generator['test'],
                         validation_freq=1, epochs=num_epochs, verbose=1, 
                         callbacks=[saving_callback])
-
     history = history.history
     accuracy = round(100 * max(history['accuracy']), 2)
 

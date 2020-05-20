@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+	<div class="sidenav">
+	  <a href="{{ url_for('index') }}">Train model</a>
+	  <a href="{{ url_for('manage_models') }}">Manage models</a>
+	  <a href="{{ url_for('image_route') }}">Manage data</a>
+	</div>
+
+	<div id="content" class="main">
+		<div style="margin-left: 50px">
+			<form method="post" enctype="multipart/form-data">
+				<div id="selectModel">
+					{% if num_models > 0 %}
+					<p>Select model</p>
+					<select name="model">
+						{% for model in models %}
+						<option value="{{ model }}" SELECTED > {{ model }} </option>
+						{% endfor %}
+					</select><br>
+					{% else %}
+					<p class="warningtext">No pretrained model.</p>
+					{% endif %}
+				</div>
+
+				<div style="height: 50px"></div>
+
+				{% if num_models > 0 %}
+				<div id="imageUpload">
+					<input type="file"  accept="image/*" name="file" id="file"  onchange="showImage(event)" style="display: none;" value="Select image" required>
+					<label for="file" style="cursor: pointer;">Upload image</label> <br>
+					<img id="output" width="200px">
+				</div>
+
+				<div id="requestPrediction">
+					<input type="submit" id="btnSubmit" value="Predict">
+				</div>
+				{% endif %}
+			</form>
+
+			<div style="height: 50px"></div>
+			<div id="showResult">
+				{% if p0 %}
+				<img border="1" id="img_predict" width="150px" height="150px"  src="{{ filepath }}"><br>
+				<p2> Predicted by "{{ model_name }}" with confidence: </p2> <br>
+				<p1> {{ p0 }} </p1> <br>
+				<p1> {{ p1 }} </p1> <br>
+				<p1> {{ p2 }} </p1> <br>
+				<p1> {{ p3 }} </p1>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,39 +1,49 @@
-.slidecontainer {
-  width: 200px;
-  display: inline-block;
+body {
+  font-family: "Lato", sans-serif;
 }
 
-.slider {
-  -webkit-appearance: none;
-  width: 100px;
-  height: 25px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
+.warningtext {
+  color: red;
 }
 
-.output {
-  width: 100px;
+.emptydiv {
+  width: 50px;
+  display: inline-block; 
+  vertical-align: top;
 }
 
-.slider:hover {
-  opacity: 1;
+.sidenav {
+  height: 100%;
+  width: 210px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #222;
+  overflow-x: hidden;
+  padding-top: 20px;
 }
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: #4CAF50;
-  cursor: pointer;
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
 }
 
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #4CAF50;
-  cursor: pointer;
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  width: 100%;
+  margin-left: 210px; /* Same as the width of the sidenav */
+  font-size: 28px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
 }

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Train model</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+	<div class="sidenav">
+        <a href="{{ url_for('manage_models') }}">Manage models</a>
+	    <a href="{{ url_for('predict_route') }}">Predict</a>
+        <a href="{{ url_for('image_route') }}">Manage data</a>
+	</div>
+
+	<div id="content" class="main">
+	   <div id="prameter" style="margin-left: 50px">
+            <form method="post" action="/train" enctype="multipart/form-data">
+            <h2>Training parameters</h2>
+            <div>
+                <div style="width: 300px; display: inline-block; vertical-align: top;">
+                    <p>Learning rate</p>
+                        <input type="range" name="lrInputName" id="lrInputId" value="0.001" min="0.0001" max="0.01" step="0.0001" oninput="lrOutputId.value = lrInputId.value">
+                        <output name="lrOutputName" id="lrOutputId">0.001</output>
+                </div>
+
+                <div class="emptydiv"></div>
+
+                <div style="width: 300px; display: inline-block; vertical-align: top;">
+                    <p>Base model</p>
+                        <input type="radio" id="xception" name="model" value="Xception" checked>
+                        <label for="xception">Xception</label><br>
+                        <input type="radio" id="mobilenet" name="model" value="Mobilenet">
+                        <label for="mobilenet">Mobilenet</label><br>
+                        <input type="radio" id="simple" name="model" value="Simple">
+                        <label for="simple">Simple</label>
+                </div>
+
+                <div class="emptydiv"></div>
+                <div style="width: 300px; display: inline-block; vertical-align: top">
+                	<p>Number of epochs</p>
+                	<input id="inputEpochs" type="number" name="epoch" min="1s" step="1" value="11">
+                </div>
+
+                <div class="emptydiv"></div>
+                <div style="width: 300px; display: inline-block; vertical-align: top">
+                    {% if data_status == 0 %}
+                    <p>Image folder</p>
+                    <select id="select" name="folder" action="/">
+                        {% for subfolder in folder %}
+                        <option value="{{ subfolder }}" SELECTED > {{ subfolder }} </option>
+                        {% endfor %}
+                        {% else %}
+                        <p style="color: red">Some error in image folder. Check it.</p>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            
+            <input id="btnTrain" type="submit" onclick="showImageTrain()" value="Start training"> <br>
+            </form>
+        </div>
+
+        <div id="training" style="display: none; margin-left: 50px">
+            <p style="color: red; display: inline-block;"> Model is being trained. Don't do anything.</p>
+            <!-- <img style="display: inline-block;" src="static/training.gif" width="50px"> -->
+        </div>
+
+        <div id="resultPanel" style="width: 1100px; margin-left: 50px">
+        	{% if training_fail %}
+        		<script type="text/javascript">
+        			alert('Training fail. Start again, please.');
+        		</script>
+        	{% endif %}
+
+            {% if acc %}
+            <p name="model_name">Model "{{ model_name }}" has accuracy {{ acc }} %</p>
+            <p id="trainedModelId" style="display: none">{{ model_name }}</p>
+
+            <h2>Training history</h2>
+            <div class="container" id="lossHistory" style="height: 360px; width: 500px; display: inline-block; float: left;"></div>
+            <div class="container" id="accHistory" style="height: 360px; width: 500px; display: inline-block; float: right;"></div><br>
+            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+            <script type="text/javascript" src="{{ url_for('static', filename='chart.js') }}"></script>
+            <script type="text/javascript">
+                var valLoss = JSON.parse('{{ val_loss }}');
+                var loss = JSON.parse('{{ loss }}');
+                var valAcc = JSON.parse('{{ val_accuracy }}');
+                var trainAcc = JSON.parse('{{ accuracy }}');
+                plotHistory(valLoss, loss, valAcc, trainAcc);
+            </script>
+            <br>
+            <button id="btnDiscard" onclick="discardModel()">Discard model</button> <br>
+            <button id="btnSave" onclick="saveModel()">Save model</button> <br>
+            {% endif %}
+        </div>
+    </div>
+    <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

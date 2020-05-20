@@ -7,3 +7,4 @@ IMAGE_SIZE4 = (1, IMAGE_SIZE1, IMAGE_SIZE1, 3)
 
 IMAGE_DATAFRAME_COLS = ('Filepath', 'Classes', 'Label')
 DATA_PATH = 'data'
+CLASSES = ['OK', 'RNG', 'LNG', 'LRNG']
