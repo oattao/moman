@@ -3,28 +3,52 @@
 <head>
 	<title>Test</title>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	<style type="text/css">
+		table, th, td {
+  			border: 1px solid black;
+		}
+		td {
+  			text-align: center;
+		}
+	</style>
 </head>
 <body>
 	<div class="sidenav">
-	  <a href="{{ url_for('index') }}">Train model</a>
-	  <a href="{{ url_for('predict_route') }}">Predict</a>
-	  <a href="{{ url_for('image_route') }}">Manage data</a>
+	  <a href="{{ url_for('train.showpage') }}">Train model</a>
+	  <a href="{{ url_for('predict.showpage') }}">Predict</a>
+	  <a href="{{ url_for('manage_data.showpage') }}">Manage data</a>
 	</div>
 
 	<div id="content" class="main">
-	   	<div id="showfolder" style="margin-left: 50px">
-	   		<div style="width: 300px; display: inline-block; vertical-align: top">
-                {% if num_models > 0 %}
-                <p>Trained models</p>
-				<select name="model">
-					{% for model in models %}
-					<option value="{{ model }}" SELECTED > {{ model }} </option>
+	   	<div id="showmodel" style="margin-left: 50px">
+	   		{% if display %}
+			<p class="warningtext">No model.</p>
+			{% else %}
+			<h2>List of trained models</h2>
+			<form action="/manage_model" method="POST">
+				<table style="1px solid black;">
+					<tr style="background-color: gray">
+						{% for col in cols %}
+						<td>{{ col }}</td>
+						{% endfor %}
+						<td>
+							<input type="submit" onclick="confirm('Sure?')" name="delete_model" value="Delete" style="display: {{display}}">
+						</td>
+					</tr>
+
+					{% for row in data %}
+					<tr>
+						{% for vl in row %}
+						<td>{{ vl }}</td>
+						{% endfor %}
+						<td>
+						 	<input type="checkbox" name="{{ row[0] }}" value="">
+						</td>
+					</tr>
 					{% endfor %}
-				</select><br>
-				{% else %}
-				<p class="warningtext">No pretrained model.</p>
-				{% endif %}
-            </div>
+			</table>
+			</form>
+			{% endif %}
 		</div>
 	</div>
 </body>

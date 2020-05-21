@@ -6,14 +6,14 @@
 </head>
 <body>
 	<div class="sidenav">
-	  <a href="{{ url_for('index') }}">Train model</a>
-	  <a href="{{ url_for('manage_models') }}">Manage models</a>
-	  <a href="{{ url_for('image_route') }}">Manage data</a>
+	  <a href="{{ url_for('train.showpage') }}">Train model</a>
+	  <a href="{{ url_for('manage_model.showpage') }}">Manage models</a>
+	  <a href="{{ url_for('manage_data.showpage') }}">Manage data</a>
 	</div>
 
 	<div id="content" class="main">
 		<div style="margin-left: 50px">
-			<form method="post" enctype="multipart/form-data">
+			<form action='/predict' method="post" enctype="multipart/form-data">
 				<div id="selectModel">
 					{% if num_models > 0 %}
 					<p>Select model</p>
@@ -23,7 +23,7 @@
 						{% endfor %}
 					</select><br>
 					{% else %}
-					<p class="warningtext">No pretrained model.</p>
+					<p class="warningtext">No model.</p>
 					{% endif %}
 				</div>
 

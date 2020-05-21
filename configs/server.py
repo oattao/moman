@@ -7,3 +7,7 @@ PUBLIC_HOST = ''
 
 WEB_SERVER_PORT = 8080
 UPLOAD_FOLDER = 'static'
+
+MODEL_LOG = ['ID', 'Name', 'Training date', 'Training start time', \
+            'Training stop time', 'Training data', 'Size', 'Accuracy', '_is_confirmed']
+LOG_FILE = 'model_database.csv'            
