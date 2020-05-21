@@ -23,7 +23,7 @@ def discard():
 
     return jsonify({'confirm_discard': 'yes'})
 
-@train.route('/train', methods=['GET', 'POST'])
+@train.route('/', methods=['GET', 'POST'])
 def showpage():
     if request.method == 'GET':
         folder = [name for name in os.listdir(DATA_PATH)\
