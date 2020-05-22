@@ -15,5 +15,5 @@ app.register_blueprint(predict)
 app.register_blueprint(train)
 
 if __name__ == "__main__":
-    app.run(debug=True, host=LOCAL_HOST)
+    app.run(debug=True, host=LOCAL_HOST, port=WEB_SERVER_PORT)
 

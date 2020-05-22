@@ -9,7 +9,6 @@ import tensorflow as tf
 from tensorflow.keras.utils import Sequence
 from PIL import Image, ImageOps
 
-import matplotlib.pyplot as plt
 from utils.image import load_image
 from configs.image import IMAGE_FILE_EXTENSIONS, IMAGE_DATAFRAME_COLS, \
                          IMAGE_SIZE1, IMAGE_SIZE2
