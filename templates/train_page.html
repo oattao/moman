@@ -4,6 +4,7 @@
     <title>Train model</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 
 <body>
@@ -67,7 +68,7 @@
                     {% endif %}
                 </div>
             </div>
-            {% if is_busy %}
+            {% if is_busy is sameas true %}
             <p class="warningtext">Server is busily training a model. You should wait.</p>
             {% else %}
             <input id="btnTrain" type="submit" onclick="showImageTrain()" value="Start training"> <br>
@@ -76,17 +77,11 @@
         </div>
 
         <div id="training" style="display: none; margin-left: 50px">
-            <p class="warningtext" style="display: inline-block;"> Model is being trained. Don't do anything.</p>
+            <p class="warningtext" style="display: inline-block;">Server is busily training a model. You should wait.</p>
             <!-- <img style="display: inline-block;" src="static/training.gif" width="50px"> -->
         </div>
 
         <div id="resultPanel" style="width: 1100px; margin-left: 50px">
-        	{% if training_fail %}
-        		<script type="text/javascript">
-        			alert('Training fail. Start again, please.');
-        		</script>
-        	{% endif %}
-
             {% if acc %}
             <p name="model_name">Finished training model "{{ model_name }}" with accuracy {{ acc }} %</p>
             <p id="trainedModelId" style="display: none">{{ model_name }}</p>
@@ -104,11 +99,11 @@
                 plotHistory(valLoss, loss, valAcc, trainAcc);
             </script>
             <br>
-            <button id="btnDiscard" onclick="discardModel()">Discard model</button> <br>
-            <button id="btnSave" onclick="saveModel()">Save model</button> <br>
+            <button id="btnDiscard" onclick="changeModel('discard')">Discard model</button> <br>
+            <button id="btnSave" onclick="changeModel('save')">Save model</button> <br>
             {% endif %}
         </div>
     </div>
-    <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script> -->
 </body>
 </html>

@@ -1,22 +1,16 @@
-function saveModel() {
-    document.getElementById("resultPanel").style.display = "none";
-    document.getElementById("btnTrain").style.display = "block";
-    alert('Model saved.');
-}
-
-function discardModel() {
+function changeModel(command) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", 'http://localhost:8080/discard', true);
+    xhr.open("POST", 'http://localhost:8080/changemodel', true);
 	xhr.setRequestHeader('Content-Type', 'application/json');
 	var model_name = document.getElementById('trainedModelId').innerHTML;
-	var parameters = {'model_name': model_name};
+	var parameters = {'command': command, 'model_name': model_name};
 
 	xhr.send(JSON.stringify(parameters));
 
     // Response from server
 	xhr.onload = function() {
-		console.log('Response from server.')
-		alert('Model discarded.');
+		console.log('Response from server:')
+		alert('Model is ' + command);
 	}
 	document.getElementById("resultPanel").style.display = "none";
 	document.getElementById("btnTrain").style.display = "block";

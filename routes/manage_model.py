@@ -14,6 +14,7 @@ def showpage():
         return render_template('model_page.html', display='none')
     # read database
     df = pd.read_csv(os.path.join(MODEL_PATH, LOG_FILE))
+    df = df[df['_is_confirmed'] == True]
     if request.method == 'POST':
         del_idx = [idx for idx in df['ID'].values \
                    if request.form.get(idx) is not None]

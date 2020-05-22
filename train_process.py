@@ -7,7 +7,7 @@ from utils.model import create_model, log_write, get_size
 from utils.data import create_dataframe, ImageGenerator
 from sklearn.model_selection import train_test_split
 
-from configs.server import MODEL_LOG
+from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST
 from configs.image import DATA_PATH
 
 import pdb
@@ -24,6 +24,11 @@ model_name = args.model_name
 image_folder = args.image_folder
 num_epochs = args.num_epochs
 learning_rate = args.learning_rate
+
+# before training raise a flag
+flag = os.path.join(MODEL_PATH, FLAG)
+with open(flag, 'wb') as f:
+    pickle.dump('True', f)
 
 # get time for log
 today = date.today()
@@ -51,10 +56,8 @@ generator = {'train': ImageGenerator(df=train_frame, label_col='Classes', classe
              'test': ImageGenerator(df=test_frame, label_col='Classes', classes=classes)}
 
 # checkpoint callbacks
-tmp = '_tmp'
-os.mkdir(tmp) 
 folder_name = '{}_{}_{}'.format(model_name, today, time_now)
-checkpoint_path = os.path.join(tmp, folder_name)
+checkpoint_path = os.path.join(MODEL_PATH, folder_name)
 checkpoint_dir = os.path.dirname(checkpoint_path)
 saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                      monitor='val_accuracy',
@@ -88,15 +91,9 @@ _is_confirmed = False
 log_content = [_id, _name, _training_date, _training_starttime,
                _training_stoptime, _training_data, _size, _accuracy, _is_confirmed]
 
-tmp_log = dict(zip(MODEL_LOG, log_content))
-tmp_hist = history
+log_write(os.path.join(MODEL_PATH, LOG_FILE), log_content)
+with open(os.path.join(MODEL_PATH, HIST), 'wb') as f:
+    pickle.dump(history, f)
 
-with open(os.path.join(tmp, 'tmp_log.pickle'), 'wb') as f:
-	pickle.dump(tmp_log, f)
-with open(os.path.join(tmp, 'tmp_hist.pickle'), 'wb') as f:
-	pickle.dump(tmp_hist, f)
-
-
-
-
-
+# after training delete the flag
+os.remove(flag)
