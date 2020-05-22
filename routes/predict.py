@@ -45,6 +45,8 @@ def showpage():
         flash('No file selected for uploading')
         return redirect(request.url)
     if file and allowed_file(file.filename):
+        # try fix the filename
+        # filename = 'uploaded.jpg'
         filename = file.filename
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)

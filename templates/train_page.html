@@ -67,8 +67,11 @@
                     {% endif %}
                 </div>
             </div>
-            
+            {% if is_busy %}
+            <p class="warningtext">Server is busily training a model. You should wait.</p>
+            {% else %}
             <input id="btnTrain" type="submit" onclick="showImageTrain()" value="Start training"> <br>
+            {% endif %}
             </form>
         </div>
 
@@ -85,7 +88,7 @@
         	{% endif %}
 
             {% if acc %}
-            <p name="model_name">Model "{{ model_name }}" has accuracy {{ acc }} %</p>
+            <p name="model_name">Finished training model "{{ model_name }}" with accuracy {{ acc }} %</p>
             <p id="trainedModelId" style="display: none">{{ model_name }}</p>
 
             <h2>Training history</h2>
