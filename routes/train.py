@@ -3,8 +3,10 @@ import os
 import shutil
 import pandas as pd
 from utils.model import train_model
+from utils.webservice import show_tabula
 from configs.image import DATA_PATH
 from configs.server import MODEL_PATH, LOG_FILE
+import pdb
 
 train = Blueprint('train', __name__)
 
@@ -25,15 +27,13 @@ def discard():
 
 @train.route('/', methods=['GET', 'POST'])
 def showpage():
+    folder = [name for name in os.listdir(DATA_PATH)\
+                  if os.path.isdir(os.path.join(DATA_PATH, name))] 
+    if len(folder) > 0:
+        data = show_tabula(folder)
+    
     if request.method == 'GET':
-        folder = [name for name in os.listdir(DATA_PATH)\
-         if os.path.isdir(os.path.join(DATA_PATH, name))] 
-        if len(folder) == 0:
-            data_status = 3
-        else:
-            data_status = 0
-
-        return render_template('train_page.html', folder=folder, data_status=data_status)
+            return render_template('train_page.html', data=data)
 
     # Handle POST request
     parameters = request.form
@@ -43,15 +43,7 @@ def showpage():
     num_epochs = int(parameters.get('epoch'))
 
     acc, history, trained_model = train_model(model_name=model_name, image_folder=image_folder, 
-                                              num_epochs=num_epochs, learning_rate=learning_rate)
-
-    # get subfolder of data path
-    folder = [name for name in os.listdir(DATA_PATH)\
-         if os.path.isdir(os.path.join(DATA_PATH, name))] 
-    if len(folder) == 0:
-        data_status = 3
-    else:
-        data_status = 0       
+                                              num_epochs=num_epochs, learning_rate=learning_rate)    
 
     # round values
     accuracy = [100 * n for n in history['accuracy']]
@@ -59,10 +51,11 @@ def showpage():
     loss = history['loss']
     val_loss = history['val_loss']
 
-    return render_template('train_page.html', folder=folder, data_status=data_status,
+    return render_template('train_page.html', folder=folder,
                             model_name=trained_model, acc=acc, 
                             val_loss=val_loss,
                             val_accuracy=val_accuracy,
                             loss=loss,
-                            accuracy=accuracy)
+                            accuracy=accuracy,
+                            data=data)
 

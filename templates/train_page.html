@@ -43,17 +43,28 @@
                 </div>
 
                 <div class="emptydiv"></div>
-                <div style="width: 300px; display: inline-block; vertical-align: top">
-                    {% if data_status == 0 %}
-                    <p>Image folder</p>
-                    <select id="select" name="folder" action="/">
-                        {% for subfolder in folder %}
-                        <option value="{{ subfolder }}" SELECTED > {{ subfolder }} </option>
+
+                <div id="showfolder">
+                    {% if display %}
+                    <p class="warningtext">No data.</p>
+                    {% else %}
+                    <h2>List of image folders</h2>
+                        {% for key in data %}
+                        <div id="{{ key }}" style="border-style: dotted; border-color: black; width: 300px; height: 220px; display: inline-block;">
+                            <input class="samerow" type="radio" id="{{ key }}" name="folder" value="{{ key }}" checked="">
+                            <label class="warningtext samerow" for="{{ key }}">{{ key }}</label>
+                            <table>
+                                {% for class in data[key] %}
+                                <tr>
+                                    <td>{{ class }}</td>
+                                    <td width="10px"></td>
+                                    <td>{{ data[key][class] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
                         {% endfor %}
-                        {% else %}
-                        <p class="warningtext">Some error in image folder. Check it.</p>
-                        {% endif %}
-                    </select>
+                    {% endif %}
                 </div>
             </div>
             

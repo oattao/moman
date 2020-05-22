@@ -14,22 +14,37 @@
 	<div id="content" class="main">
 		<div style="margin-left: 50px">
 			<form action='/predict' method="post" enctype="multipart/form-data">
-				<div id="selectModel">
-					{% if num_models > 0 %}
-					<p>Select model</p>
-					<select name="model">
-						{% for model in models %}
-						<option value="{{ model }}" SELECTED > {{ model }} </option>
-						{% endfor %}
-					</select><br>
-					{% else %}
+				<div id="showmodel">
+			   		{% if display %}
 					<p class="warningtext">No model.</p>
+					{% else %}
+					<h2>List of trained models</h2>
+						<table style="1px solid black;">
+							<tr style="background-color: gray">
+								{% for col in cols %}
+								<td>{{ col }}</td>
+								{% endfor %}
+								<td>
+								</td>
+							</tr>
+
+							{% for row in data %}
+							<tr>
+								{% for vl in row %}
+								<td>{{ vl }}</td>
+								{% endfor %}
+								<td>
+									<input type="radio" id="{{ row[0] }}" name="model" value="{{ row[0] }}" checked>
+								</td>
+							</tr>
+							{% endfor %}
+					</table>
 					{% endif %}
 				</div>
 
 				<div style="height: 50px"></div>
 
-				{% if num_models > 0 %}
+				{% if cols %}
 				<div id="imageUpload">
 					<input type="file"  accept="image/*" name="file" id="file"  onchange="showImage(event)" style="display: none;" value="Select image" required>
 					<label for="file" style="cursor: pointer;">Upload image</label> <br>

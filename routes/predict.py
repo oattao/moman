@@ -1,9 +1,10 @@
 from flask import Blueprint, Flask, request, render_template
 import os
+import pandas as pd
 from utils.model import load_model
 from utils.image import allowed_file, load_image
 from configs.image import CLASSES
-from configs.server import MODEL_PATH, UPLOAD_FOLDER
+from configs.server import MODEL_PATH, UPLOAD_FOLDER, LOG_FILE
 
 predict = Blueprint('predict', __name__)
 
@@ -14,14 +15,26 @@ import pdb
 def showpage():
     global model_list
     # load trained model
-    models = [name for name in os.listdir(MODEL_PATH)\
-              if os.path.isdir(os.path.join(MODEL_PATH, name))] 
-    num_models = len(models)
+    # check if model database is exist
+    if not os.path.exists(os.path.join(MODEL_PATH, LOG_FILE)):
+        return render_template('model_page.html', display='none')
+    # read database
+    df = pd.read_csv(os.path.join(MODEL_PATH, LOG_FILE))
+    num_models = len(df)
+
+    if num_models>0:
+        cols = list(df.columns)
+        cols.pop(-1)
+        data_cols = [df[col].values for col in cols]
+        data = zip(*data_cols)
 
     if request.method == 'GET':
-        if num_models > 0:
-            model_list = load_model(models)
-        return render_template('predict_page.html', models=models, num_models=num_models)
+        if num_models == 0:
+            return render_template('predict_page.html', display='none')
+        else:
+            names = df['ID'].values
+            model_list = load_model(names)
+            return render_template('predict_page.html', cols=cols, data=data)
 
     # handle the image
     if 'file' not in request.files:
@@ -48,7 +61,8 @@ def showpage():
         p2 = '{}: {} %'.format(CLASSES[2], prob[2])
         p3 = '{}: {} %'.format(CLASSES[3], prob[3])
 
-        return render_template('predict_page.html', models=models, num_models=num_models,
+        return render_template('predict_page.html',
                                 p0=p0, p1=p1, p2=p2, p3=p3,
                                 model_name=model_name,
-                                filepath=filepath)
+                                filepath=filepath,
+                                cols=cols, data=data)

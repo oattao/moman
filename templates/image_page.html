@@ -3,11 +3,6 @@
 <head>
 	<title>Test</title>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-    <style type="text/css">
-        td {
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
 	<div class="sidenav">
@@ -22,20 +17,20 @@
             <p class="warningtext">No data.</p>
             {% else %}
             <h2>List of image folders</h2>
-                <table style="1px solid black;">
-                    <tr style="background-color: gray">
-                        {% for col in cols %}
-                        <td>{{ col }}</td>
+                {% for key in data %}
+                <div id="{{ key }}" style="border-style: dotted; border-color: black; width: 300px; height: 300px; display: inline-block;">
+                    <p class="warningtext">{{key}}</p>
+                    <table>
+                        {% for class in data[key] %}
+                        <tr>
+                            <td>{{ class }}</td>
+                            <td width="10px"></td>
+                            <td>{{ data[key][class] }}</td>
+                        </tr>
                         {% endfor %}
-                    </tr>
-                    {% for row in data %}
-                    <tr>
-                        {% for vl in row %}
-                        <td>{{ vl }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </table>
+                    </table>
+                </div>
+                {% endfor %}
             {% endif %}
         </div>
     </div>

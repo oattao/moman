@@ -2,12 +2,16 @@ body {
   font-family: "Lato", sans-serif;
 }
 
-table, th, td {
+/*table, th, td {
   border: 1px solid black;
-}
+}*/
 
 .warningtext {
   color: red;
+}
+
+.samerow {
+  display: inline-block;
 }
 
 .emptydiv {
