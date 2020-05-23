@@ -7,7 +7,7 @@ from utils.model import create_model, log_write, get_size
 from utils.data import create_dataframe, ImageGenerator
 from sklearn.model_selection import train_test_split
 
-from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST, STOP_FLAG
+from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST
 from configs.image import DATA_PATH
 import keras
 
@@ -71,7 +71,7 @@ saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                      verbose=1)
 
 # tensorboard callback
-tfboard_callback = tf.keras.callbacks.TensorBoard(log_dir='./tflog')
+# tfboard_callback = tf.keras.callbacks.TensorBoard(log_dir='./tflog')
 
 # external call back
 # class ExtStop(tf.keras.callbacks.Callback):

@@ -75,13 +75,13 @@
         </div>
 
         <div id="training" style="margin-left: 50px">
-            <!-- {% if is_busy is sameas true %} -->
+            {% if is_busy is sameas true %}
             <h2>Progress</h2>
             <p class="warningtext">Server is training a model.</p>
             <form method="post" action="/stoptraining" enctype="multipart/form-data">
                 <input type="submit" id=btnStop name="stoptraining" value="Stop training">
             </form>
-            <!-- {% endif %} -->
+            {% endif %}
 
             {% if stop %}
             <p class="warningtext">Training stopped.</p>
