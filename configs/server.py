@@ -12,4 +12,5 @@ MODEL_LOG = ['ID', 'Name', 'Training date', 'Training start time', \
             'Training stop time', 'Training data', 'Size', 'Accuracy', '_is_confirmed']
 LOG_FILE = 'model_database.csv'  
 FLAG = 'is_busy.pickle'   
-HIST = 'temp_hist.pickle'       
+HIST = 'temp_hist.pickle'  
+STOP_FLAG = 'stop.pickle'     

@@ -1,5 +1,7 @@
 from flask import Blueprint, Flask, request, render_template, jsonify
 import os
+import signal
+import time
 import platform
 import pickle
 import shutil
@@ -7,13 +9,35 @@ import pandas as pd
 from utils.model import train_model
 from utils.webservice import show_tabula
 from configs.image import DATA_PATH
-from configs.server import MODEL_PATH, LOG_FILE, FLAG, HIST
+from configs.server import MODEL_PATH, LOG_FILE, FLAG, HIST, STOP_FLAG
 import pdb
 
 train = Blueprint('train', __name__)
 
+@train.route('/stoptraining', methods=['POST'])
+def stoptraining():
+    is_busy = False
+    with open(os.path.join(MODEL_PATH, FLAG), 'rb') as f:
+        flag = pickle.load(f)
+        pid = flag['pid']
+        model_id = flag['model_id']
+    os.kill(pid, signal.SIGTERM)
+    os.remove(os.path.join(MODEL_PATH, FLAG))
+    if os.path.exists(os.path.join(MODEL_PATH, model_id)):
+        shutil.rmtree(os.path.join(MODEL_PATH, model_id))
+
+    folder = [name for name in os.listdir(DATA_PATH)\
+                  if os.path.isdir(os.path.join(DATA_PATH, name))] 
+    if len(folder) > 0:
+        data = show_tabula(folder)
+    else:
+        data = None
+    return render_template('train_page.html', data=data, stop=True, is_busy=is_busy)
+
+
 @train.route('/changemodel', methods=['POST'])
 def changemodel():
+    # is_busy = False
     model_name = request.json['model_name']
     command = request.json['command']
     df = pd.read_csv(os.path.join(MODEL_PATH, LOG_FILE))
@@ -35,7 +59,8 @@ def changemodel():
 
 @train.route('/', methods=['GET', 'POST'])
 def showpage():
-    # check if any model is training?
+    is_busy = False
+
     folder = [name for name in os.listdir(DATA_PATH)\
                   if os.path.isdir(os.path.join(DATA_PATH, name))] 
     if len(folder) > 0:
@@ -47,8 +72,6 @@ def showpage():
         flag = os.path.join(MODEL_PATH, FLAG)
         if os.path.exists(flag):
             is_busy = True
-        else:
-            is_busy = False
         hist = os.path.join(MODEL_PATH, HIST)
 
         if os.path.exists(hist):
@@ -90,4 +113,4 @@ def showpage():
         os.system("start cmd.exe /c python train_process.py {} {} {} {}".format(
             model_name,image_folder, num_epochs, learning_rate))
 
-    return render_template('train_page.html', data=data)
+    return render_template('train_page.html', data=data, is_busy=is_busy)
