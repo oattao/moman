@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 
 from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST
 from configs.image import DATA_PATH
+import keras
 
 import pdb
 
@@ -55,7 +56,7 @@ image_dataframe, test_size=0.15, random_state=911)
 generator = {'train': ImageGenerator(df=train_frame, label_col='Classes', classes=classes),
              'test': ImageGenerator(df=test_frame, label_col='Classes', classes=classes)}
 
-# checkpoint callbacks
+# checkpoint callback
 folder_name = '{}_{}_{}'.format(model_name, today, time_now)
 checkpoint_path = os.path.join(MODEL_PATH, folder_name)
 checkpoint_dir = os.path.dirname(checkpoint_path)
@@ -64,9 +65,16 @@ saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                      save_best_only=True,
                                                      verbose=1)
 
+# tensorboard callback
+tfboard_callback = tf.keras.callbacks.TensorBoard(log_dir='./tflog')
+
+# remote monitoring callback
+monitor_callback = keras.callbacks.RemoteMonitor(root="http://localhost:9000")
+
 history = model.fit(x=generator['train'], validation_data=generator['test'],
                     validation_freq=1, epochs=num_epochs, verbose=1,
-                    callbacks=[saving_callback])
+                    callbacks=[saving_callback, tfboard_callback, 
+                               monitor_callback])
 history = history.history
 accuracy = round(100 * max(history['accuracy']), 2)
 
