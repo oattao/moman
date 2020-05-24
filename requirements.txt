@@ -1,12 +1,8 @@
-# Create a new enviroment in Anaconda
-# Install following package by:
-# pip install package_name
-
-flask
-pandas
-numpy
-sklearn
-tensorflow
-keras
-pillow
+flask==1.1.2
+pandas==1.0.3
+numpy==1.18.3
+scikit-learn==0.22.2.post1
+tensorflow==2.2.0
+keras==2.3.1
+pillow==7.1.1
 

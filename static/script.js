@@ -1,6 +1,6 @@
 function changeModel(command) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", 'http://localhost:8080/changemodel', true);
+    xhr.open("POST", '/changemodel', true);
 	xhr.setRequestHeader('Content-Type', 'application/json');
 	var model_name = document.getElementById('trainedModelId').innerHTML;
 	var parameters = {'command': command, 'model_name': model_name};

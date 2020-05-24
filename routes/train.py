@@ -116,10 +116,10 @@ def trainmodel():
     num_epochs = int(parameters.get('epoch'))
 
     if platform.system() == 'Linux':
-        os.system('python train_process.py {} {} {} {}'.format(model_name,
+        os.system('python3 train_process.py {} {} {} {}'.format(model_name,
             image_folder, num_epochs, learning_rate))
     else:
-        os.system("start cmd.exe /c python train_process.py {} {} {} {}".format(
+        os.system("start cmd.exe /c python3 train_process.py {} {} {} {}".format(
             model_name,image_folder, num_epochs, learning_rate))
 
     return render_template('train_page.html', data=data, is_busy=True)
