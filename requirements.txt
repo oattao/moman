@@ -1,0 +1,12 @@
+# Create a new enviroment in Anaconda
+# Install following package by:
+# pip install package_name
+
+flask
+pandas
+numpy
+sklearn
+tensorflow
+keras
+PIL
+

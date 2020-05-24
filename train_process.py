@@ -94,7 +94,7 @@ monitor_callback = keras.callbacks.RemoteMonitor(root="http://localhost:9000")
 
 history = model.fit(x=generator['train'], validation_data=generator['test'],
                     validation_freq=1, epochs=num_epochs, verbose=1,
-                    callbacks=[saving_callback, tfboard_callback, 
+                    callbacks=[saving_callback, 
                                monitor_callback])
 history = history.history
 accuracy = round(100 * max(history['accuracy']), 2)

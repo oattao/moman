@@ -31,7 +31,6 @@ def showpage():
         return render_template('model_page.html', display='none')
     # Not display ID and _is_confirmed columns
     cols = list(df.columns)
-    # cols.pop(0)
     cols.pop(-1)
     data_cols = [df[col].values for col in cols]
     data = zip(*data_cols)

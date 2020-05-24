@@ -9,14 +9,13 @@ import pandas as pd
 from utils.model import train_model
 from utils.webservice import show_tabula
 from configs.image import DATA_PATH
-from configs.server import MODEL_PATH, LOG_FILE, FLAG, HIST, STOP_FLAG
+from configs.server import MODEL_PATH, LOG_FILE, FLAG, HIST
 import pdb
 
 train = Blueprint('train', __name__)
 
 @train.route('/stoptraining', methods=['POST'])
 def stoptraining():
-    is_busy = False
     with open(os.path.join(MODEL_PATH, FLAG), 'rb') as f:
         flag = pickle.load(f)
         pid = flag['pid']
@@ -32,7 +31,7 @@ def stoptraining():
         data = show_tabula(folder)
     else:
         data = None
-    return render_template('train_page.html', data=data, stop=True, is_busy=is_busy)
+    return render_template('train_page.html', data=data, stop=True, is_busy=False)
 
 
 @train.route('/changemodel', methods=['POST'])
@@ -57,47 +56,57 @@ def changemodel():
     os.remove(os.path.join(MODEL_PATH, HIST))
     return jsonify({'confirm': 'yes'})
 
-@train.route('/', methods=['GET', 'POST'])
+@train.route('/', methods=['GET'])
 def showpage():
-    is_busy = False
+    # get the image folder list
+    folder = [name for name in os.listdir(DATA_PATH)\
+              if os.path.isdir(os.path.join(DATA_PATH, name))] 
+    if len(folder) > 0:
+        data = show_tabula(folder)
+    else:
+        data = None
 
+    # check if server is busy on training task
+    if os.path.exists(os.path.join(MODEL_PATH, FLAG)):
+        is_busy = True
+    else:
+        is_busy = False
+
+    # check if any model waiting for confirm
+    if os.path.exists(os.path.join(MODEL_PATH, HIST)):
+        with open(os.path.join(os.path.join(MODEL_PATH, HIST)), 'rb') as f:
+            history = pickle.load(f)
+        accuracy = [100 * n for n in history['accuracy']]
+        val_accuracy = [100 * n for n in history['val_accuracy']]
+        loss = history['loss']
+        val_loss = history['val_loss']
+
+        log = os.path.join(MODEL_PATH, LOG_FILE)
+        logdata = pd.read_csv(log).iloc[-1]
+        model_name = logdata['ID']
+        acc = logdata['Accuracy']
+        return render_template('train_page.html',
+                                is_busy=is_busy,
+                                model_name=model_name, acc=acc, 
+                                val_loss=val_loss,
+                                val_accuracy=val_accuracy,
+                                loss=loss,
+                                accuracy=accuracy,
+                                data=data)
+    else:
+        return render_template('train_page.html',
+                               is_busy=is_busy,
+                               data=data)
+
+
+@train.route('/', methods=['POST'])
+def trainmodel():
     folder = [name for name in os.listdir(DATA_PATH)\
                   if os.path.isdir(os.path.join(DATA_PATH, name))] 
     if len(folder) > 0:
         data = show_tabula(folder)
     else:
         data = None
-    
-    if request.method == 'GET':
-        flag = os.path.join(MODEL_PATH, FLAG)
-        if os.path.exists(flag):
-            is_busy = True
-        hist = os.path.join(MODEL_PATH, HIST)
-
-        if os.path.exists(hist):
-            # Show up the history
-            with open(hist, 'rb') as f:
-                history = pickle.load(f)
-            log = os.path.join(MODEL_PATH, LOG_FILE)
-            logdata = pd.read_csv(log).iloc[-1]
-
-            accuracy = [100 * n for n in history['accuracy']]
-            val_accuracy = [100 * n for n in history['val_accuracy']]
-            loss = history['loss']
-            val_loss = history['val_loss']
-
-            model_name = logdata['ID']
-            acc = logdata['Accuracy']
-            return render_template('train_page.html',
-                                    is_busy=is_busy,
-                                    model_name=model_name, acc=acc, 
-                                    val_loss=val_loss,
-                                    val_accuracy=val_accuracy,
-                                    loss=loss,
-                                    accuracy=accuracy,
-                                    data=data)
-
-        return render_template('train_page.html', data=data, is_busy=is_busy)
 
     # Handle POST request
     parameters = request.form
@@ -113,4 +122,4 @@ def showpage():
         os.system("start cmd.exe /c python train_process.py {} {} {} {}".format(
             model_name,image_folder, num_epochs, learning_rate))
 
-    return render_template('train_page.html', data=data, is_busy=is_busy)
+    return render_template('train_page.html', data=data, is_busy=True)
