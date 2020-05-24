@@ -8,5 +8,5 @@ numpy
 sklearn
 tensorflow
 keras
-PIL
+pillow
 
