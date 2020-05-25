@@ -70,25 +70,6 @@ saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                      save_best_only=True,
                                                      verbose=1)
 
-# tensorboard callback
-# tfboard_callback = tf.keras.callbacks.TensorBoard(log_dir='./tflog')
-
-# external call back
-# class ExtStop(tf.keras.callbacks.Callback):
-#     def on_test_batch_end(self, batch, logs=None):
-#         if os.path.join(MODEL_PATH, STOP_FLAG):
-#             print('-'*100)
-#             print('Stopping')
-#             os.remove(os.path.join(MODEL_PATH, STOP_FLAG))
-#             self.model.stop_training = True
-#             # pdb.set_trace()
-
-#             # delete the flag
-
-# stop_callback = ExtStop()
-
-
-
 # remote monitoring callback
 monitor_callback = keras.callbacks.RemoteMonitor(root="http://localhost:9000")
 
