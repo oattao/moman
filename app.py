@@ -22,6 +22,3 @@ app.register_blueprint(train)
 
 if __name__ == "__main__":
     app.run(debug=True, host=args.HOST, port=args.PORT)
-
-# test change git
-
