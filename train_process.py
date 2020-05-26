@@ -11,8 +11,6 @@ from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST, NEED_CON
 from configs.image import DATA_PATH
 import keras
 
-import pdb
-
 parser = argparse.ArgumentParser()
 parser.add_argument("model_name", type=str, help="Base model name")
 parser.add_argument("image_folder", type=str, help="Image folder")
@@ -60,7 +58,7 @@ train_frame, test_frame = train_test_split(
 image_dataframe, test_size=0.15, random_state=911)
 
 # image generator
-if model_name in ['Simple', 'Small']:
+if model_name in ['Simple', 'Small', 'Tiny']:
     batch_size = 32
 else:
     batch_size = 8
@@ -115,8 +113,6 @@ log_content = [_id, _name, _training_date, _training_starttime,
                _training_stoptime, _training_data, _size, _accuracy, _is_confirmed]
 
 log_write(os.path.join(MODEL_PATH, LOG_FILE), log_content)
-# with open(os.path.join(MODEL_PATH, HIST), 'wb') as f:
-#     pickle.dump(history, f)
 
 # after training delete the busy flag and raise the need_confirmed flage
 os.remove(flag)

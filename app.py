@@ -2,13 +2,10 @@ import os
 import pickle
 import json
 import argparse
-import pandas as pd
-from flask import Flask, request, jsonify, url_for, render_template
+from flask import Flask, request
 from flask_socketio import SocketIO, emit
 
-from threading import Thread, Event
-
-from configs.server import HIST, MODEL_PATH, FLAG, NEED_CONFIRM, LOG_FILE
+from configs.server import HIST, MODEL_PATH, FLAG
 
 from routes.manage_data import manage_data
 from routes.manage_model import manage_model
@@ -33,8 +30,6 @@ app.register_blueprint(error)
 app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
 
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
-thread = Thread()
-thread_stop_event = Event()
 
 @app.route("/monitortraining", methods=['POST'])
 def publish():
@@ -71,54 +66,12 @@ def publish():
         with open(os.path.join(MODEL_PATH, FLAG), 'rb') as f:
             n_epochs = pickle.load(f)['num_epochs']
 
-        print('-'*100)
-        print(n_epochs, num_epochs)
         if n_epochs == num_epochs:
             socketio.emit('end', {'finish': 'ok'}, namespace="/monitortraining")
 
     except:
         return {'error': 'invalid payload'}
     return "OK"
-
-# @app.route("/monitortraining", methods=['GET'])
-# def monitortraining():
-#     # read history file
-#     hist_file = os.path.join(MODEL_PATH, HIST)
-#     if os.path.exists(hist_file):
-#         with open(hist_file, 'rb') as f:
-#             history = pickle.load(f)
-#             val_loss = history['val_loss']
-#             loss = history['loss']
-#             accuracy = history['accuracy']
-#             val_accuracy = history['val_accuracy']
-#     else: 
-#         loss= 5
-#         val_loss = 5
-#         accuracy = 0
-#         val_accuracy = 0
-
-#     # check if busy
-#     if os.path.exists(os.path.join(MODEL_PATH, FLAG)):
-#         is_busy = True
-#         return render_template('monitor_page.html',
-#                                is_busy=is_busy,
-#                                val_loss=val_loss,
-#                                loss=loss,
-#                                accuracy=accuracy,
-#                                val_accuracy=val_accuracy)
-
-#     # check if need confirm
-#     if os.path.exists(os.path.join(MODEL_PATH, NEED_CONFIRM)):
-#         log = os.path.join(MODEL_PATH, LOG_FILE)
-#         logdata = pd.read_csv(log).iloc[-1]
-#         model_name = logdata['ID']
-#         acc = logdata['Accuracy']
-#         return render_template('monitor_page.html',
-#                                 model_name=model_name, acc=acc, 
-#                                 val_loss=val_loss,
-#                                 val_accuracy=val_accuracy,
-#                                 loss=loss,
-#                                 accuracy=accuracy)
 
 if __name__ == "__main__":
     socketio.run(app)
