@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, request, render_template
+from flask import Blueprint, render_template
 
 import os
 import sys

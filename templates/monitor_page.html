@@ -10,7 +10,7 @@
     <div id="pannel" style="width: 1100px; margin-left: 50px">
         <h2>Training progress</h2>
         <div id="training" style="margin-left: 50px">
-            {% if is_busy is sameas true %}
+            {% if train_status %}
             <form method="post" action="/stoptraining" enctype="multipart/form-data">
                 <input type="submit" id=btnStop name="stoptraining" value="Stop training" onclick="confirm('Sure?')">
             </form>

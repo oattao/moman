@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, request, render_template
+from flask import Blueprint, request, render_template
 
 import os
 import pandas as pd

@@ -14,7 +14,8 @@ from routes.manage_data import manage_data
 from routes.manage_model import manage_model
 from routes.predict import predict
 from routes.train import train
-# from routes.monitor import monitor
+from routes.monitor import monitor
+from routes.error import error
 
 parser = argparse.ArgumentParser()
 parser.add_argument("HOST", type=str, help="web host")
@@ -26,7 +27,8 @@ app.register_blueprint(manage_data)
 app.register_blueprint(manage_model)
 app.register_blueprint(predict)
 app.register_blueprint(train)
-# app.register_blueprint(monitor)
+app.register_blueprint(monitor)
+app.register_blueprint(error)
 
 app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
 
@@ -78,45 +80,45 @@ def publish():
         return {'error': 'invalid payload'}
     return "OK"
 
-@app.route("/monitortraining", methods=['GET'])
-def monitortraining():
-    # read history file
-    hist_file = os.path.join(MODEL_PATH, HIST)
-    if os.path.exists(hist_file):
-        with open(hist_file, 'rb') as f:
-            history = pickle.load(f)
-            val_loss = history['val_loss']
-            loss = history['loss']
-            accuracy = history['accuracy']
-            val_accuracy = history['val_accuracy']
-    else: 
-        loss= 5
-        val_loss = 5
-        accuracy = 0
-        val_accuracy = 0
+# @app.route("/monitortraining", methods=['GET'])
+# def monitortraining():
+#     # read history file
+#     hist_file = os.path.join(MODEL_PATH, HIST)
+#     if os.path.exists(hist_file):
+#         with open(hist_file, 'rb') as f:
+#             history = pickle.load(f)
+#             val_loss = history['val_loss']
+#             loss = history['loss']
+#             accuracy = history['accuracy']
+#             val_accuracy = history['val_accuracy']
+#     else: 
+#         loss= 5
+#         val_loss = 5
+#         accuracy = 0
+#         val_accuracy = 0
 
-    # check if busy
-    if os.path.exists(os.path.join(MODEL_PATH, FLAG)):
-        is_busy = True
-        return render_template('monitor_page.html',
-                               is_busy=is_busy,
-                               val_loss=val_loss,
-                               loss=loss,
-                               accuracy=accuracy,
-                               val_accuracy=val_accuracy)
+#     # check if busy
+#     if os.path.exists(os.path.join(MODEL_PATH, FLAG)):
+#         is_busy = True
+#         return render_template('monitor_page.html',
+#                                is_busy=is_busy,
+#                                val_loss=val_loss,
+#                                loss=loss,
+#                                accuracy=accuracy,
+#                                val_accuracy=val_accuracy)
 
-    # check if need confirm
-    if os.path.exists(os.path.join(MODEL_PATH, NEED_CONFIRM)):
-        log = os.path.join(MODEL_PATH, LOG_FILE)
-        logdata = pd.read_csv(log).iloc[-1]
-        model_name = logdata['ID']
-        acc = logdata['Accuracy']
-        return render_template('monitor_page.html',
-                                model_name=model_name, acc=acc, 
-                                val_loss=val_loss,
-                                val_accuracy=val_accuracy,
-                                loss=loss,
-                                accuracy=accuracy)
+#     # check if need confirm
+#     if os.path.exists(os.path.join(MODEL_PATH, NEED_CONFIRM)):
+#         log = os.path.join(MODEL_PATH, LOG_FILE)
+#         logdata = pd.read_csv(log).iloc[-1]
+#         model_name = logdata['ID']
+#         acc = logdata['Accuracy']
+#         return render_template('monitor_page.html',
+#                                 model_name=model_name, acc=acc, 
+#                                 val_loss=val_loss,
+#                                 val_accuracy=val_accuracy,
+#                                 loss=loss,
+#                                 accuracy=accuracy)
 
 if __name__ == "__main__":
     socketio.run(app)

@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, request, render_template, jsonify
+from flask import Blueprint, request, render_template, jsonify
 import os
 import signal
 import time
