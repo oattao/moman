@@ -13,7 +13,7 @@ function plotHistory(valLoss, loss, valAcc, trainAcc) {
 		var chartLoss = new CanvasJS.Chart("lossHistory", {
 			title: {text: "Loss history"},
 			axisX: {title: "Epoch", interval: 1, minimum:0},
-			axisY: {title: "Loss value", minimum: 0, maximum: 2},
+			axisY: {title: "Loss value", minimum: 0, maximum: 10},
 			legend: {cursor: "pointter", fontSize: 16},
 			data: [{name: "Validation loss", type: "line", dataPoints: vL, showInLegend: true},
 				   {name: "Training loss", type: "line", dataPoints: tL, showInLegend: true}]

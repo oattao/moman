@@ -16,11 +16,6 @@ function changeModel(command) {
 	document.getElementById("btnTrain").style.display = "block";
 }
 
-function showImageTrain() {
-	document.getElementById("training").style.display = "block";
-	document.getElementById("btnTrain").style.display = "none";
-}
-
 function showImage(event) {
 	var image = document.getElementById('output');
 	image.src = URL.createObjectURL(event.target.files[0]);

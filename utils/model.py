@@ -25,8 +25,16 @@ def load_model(models):
     return model_list
 
 def create_model(model_name, n_outs):
+    if model_name == 'Small':
+        model = Sequential([
+            Conv2D(4, 3, padding='same', input_shape=IMAGE_SIZE3),
+            BatchNormalization(),
+            Activation('relu'),
+            MaxPooling2D(),
+            Flatten(),
+            Dense(n_outs, activation='softmax')])
     if model_name == 'Simple':
-            model = Sequential([
+        model = Sequential([
             Conv2D(8, 3, padding='same', input_shape=IMAGE_SIZE3),
             BatchNormalization(),
             Activation('relu'),

@@ -7,7 +7,7 @@ from utils.model import create_model, log_write, get_size
 from utils.data import create_dataframe, ImageGenerator
 from sklearn.model_selection import train_test_split
 
-from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST
+from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST, NEED_CONFIRM
 from configs.image import DATA_PATH
 import keras
 
@@ -39,7 +39,8 @@ pid = os.getpid()
 # before training raise a flag
 flag = os.path.join(MODEL_PATH, FLAG)
 with open(flag, 'wb') as f:
-    pickle.dump({'pid': pid, 'model_id': folder_name}, f)
+    pickle.dump({'pid': pid, 'model_id': folder_name, 
+                 'num_epochs': num_epochs}, f)
 
 # get number of classes (= number of subfolder)
 training_path = os.path.join(DATA_PATH, image_folder)
@@ -59,23 +60,35 @@ train_frame, test_frame = train_test_split(
 image_dataframe, test_size=0.15, random_state=911)
 
 # image generator
-generator = {'train': ImageGenerator(df=train_frame, label_col='Classes', classes=classes),
-             'test': ImageGenerator(df=test_frame, label_col='Classes', classes=classes)}
+if model_name in ['Simple', 'Small']:
+    batch_size = 32
+else:
+    batch_size = 8
+
+generator = {'train': ImageGenerator(df=train_frame, label_col='Classes',
+                                     classes=classes, batch_size=batch_size),
+             'test': ImageGenerator(df=test_frame, label_col='Classes', 
+                                    classes=classes, batch_size=batch_size)}
 
 # checkpoint callback
 checkpoint_path = os.path.join(MODEL_PATH, folder_name)
 checkpoint_dir = os.path.dirname(checkpoint_path)
-saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
-                                                     monitor='val_accuracy',
-                                                     save_best_only=True,
-                                                     verbose=1)
+saving_callback = keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                  monitor='val_accuracy',
+                                                  save_best_only=True,
+                                                  verbose=1)
+# tensorboard callback
+tfboard_callback = keras.callbacks.TensorBoard(log_dir="tflog", update_freq='batch')
+
 
 # remote monitoring callback
-monitor_callback = keras.callbacks.RemoteMonitor(root="http://localhost:9000")
+monitor_callback = keras.callbacks.RemoteMonitor(root="http://localhost:8080",
+                                                 path='/monitortraining')
 
 history = model.fit(x=generator['train'], validation_data=generator['test'],
                     validation_freq=1, epochs=num_epochs, verbose=1,
-                    callbacks=[saving_callback, 
+                    callbacks=[saving_callback,
+                               tfboard_callback,
                                monitor_callback])
 history = history.history
 accuracy = round(100 * max(history['accuracy']), 2)
@@ -102,8 +115,10 @@ log_content = [_id, _name, _training_date, _training_starttime,
                _training_stoptime, _training_data, _size, _accuracy, _is_confirmed]
 
 log_write(os.path.join(MODEL_PATH, LOG_FILE), log_content)
-with open(os.path.join(MODEL_PATH, HIST), 'wb') as f:
-    pickle.dump(history, f)
+# with open(os.path.join(MODEL_PATH, HIST), 'wb') as f:
+#     pickle.dump(history, f)
 
-# after training delete the flag
+# after training delete the busy flag and raise the need_confirmed flage
 os.remove(flag)
+with open(os.path.join(MODEL_PATH, NEED_CONFIRM), 'wb') as f:
+    pickle.dump({'need_confirm': 'yes'}, f)

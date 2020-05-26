@@ -1,13 +1,20 @@
 import os
+import pickle
+import json
 import argparse
-from flask import Flask, request, jsonify, url_for
+import pandas as pd
+from flask import Flask, request, jsonify, url_for, render_template
+from flask_socketio import SocketIO, emit
 
-from configs.server import MODEL_PATH, LOCAL_HOST, PUBLIC_HOST, WEB_SERVER_PORT
+from threading import Thread, Event
+
+from configs.server import HIST, MODEL_PATH, FLAG, NEED_CONFIRM, LOG_FILE
 
 from routes.manage_data import manage_data
 from routes.manage_model import manage_model
 from routes.predict import predict
 from routes.train import train
+# from routes.monitor import monitor
 
 parser = argparse.ArgumentParser()
 parser.add_argument("HOST", type=str, help="web host")
@@ -19,6 +26,97 @@ app.register_blueprint(manage_data)
 app.register_blueprint(manage_model)
 app.register_blueprint(predict)
 app.register_blueprint(train)
+# app.register_blueprint(monitor)
+
+app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
+
+socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
+thread = Thread()
+thread_stop_event = Event()
+
+@app.route("/monitortraining", methods=['POST'])
+def publish():
+    payload = request.form.get('data')
+    try:
+        data = json.loads(payload)
+        # num_epochs = data['epoch']
+        loss = round(data['loss'], 2)
+        val_loss = round(data['val_loss'], 2)
+        accuracy = round(data['accuracy'] * 100, 2)
+        val_accuracy = round(data['val_accuracy'] * 100, 2)
+        data = {'loss': loss, 'val_loss': val_loss, 
+                'accuracy': accuracy, 'val_accuracy': val_accuracy}
+
+        socketio.emit('newdata', {'data': data}, namespace="/monitortraining")
+
+        # Save history to HIST file
+        hist_file = os.path.join(MODEL_PATH, HIST)
+        if os.path.exists(hist_file):
+            with open(hist_file, 'rb') as f:
+                history = pickle.load(f)
+                history['loss'].append(loss)
+                history['val_loss'].append(val_loss)
+                history['accuracy'].append(accuracy)
+                history['val_accuracy'].append(val_accuracy)
+        else:
+            history = {'loss': [loss], 'val_loss': [val_loss], 
+                       'accuracy': [accuracy], 'val_accuracy': [val_accuracy]}
+
+        with open(hist_file, 'wb') as f:
+            pickle.dump(history, f)
+
+        # check if finish epoch
+        # with open(os.path.join(MODEL_PATH, FLAG), 'rb') as f:
+        #     n_epochs = pickle.load(f)['num_epochs']
+
+        # print('-'*100)
+        # print(n_epochs, num_epochs)
+        # if n_epochs == num_epochs:
+        #     socketio.emit('end', {'finish': 'ok'}, namespace="/monitortraining")
+
+    except:
+        return {'error': 'invalid payload'}
+    return "OK"
+
+@app.route("/monitortraining", methods=['GET'])
+def monitortraining():
+    # read history file
+    hist_file = os.path.join(MODEL_PATH, HIST)
+    if os.path.exists(hist_file):
+        with open(hist_file, 'rb') as f:
+            history = pickle.load(f)
+            val_loss = history['val_loss']
+            loss = history['loss']
+            accuracy = history['accuracy']
+            val_accuracy = history['val_accuracy']
+    else: 
+        loss= 5
+        val_loss = 5
+        accuracy = 0
+        val_accuracy = 0
+
+    # check if busy
+    if os.path.exists(os.path.join(MODEL_PATH, FLAG)):
+        is_busy = True
+        return render_template('monitor_page.html',
+                               is_busy=is_busy,
+                               val_loss=val_loss,
+                               loss=loss,
+                               accuracy=accuracy,
+                               val_accuracy=val_accuracy)
+
+    # check if need confirm
+    if os.path.exists(os.path.join(MODEL_PATH, NEED_CONFIRM)):
+        log = os.path.join(MODEL_PATH, LOG_FILE)
+        logdata = pd.read_csv(log).iloc[-1]
+        model_name = logdata['ID']
+        acc = logdata['Accuracy']
+        return render_template('monitor_page.html',
+                                model_name=model_name, acc=acc, 
+                                val_loss=val_loss,
+                                val_accuracy=val_accuracy,
+                                loss=loss,
+                                accuracy=accuracy)
 
 if __name__ == "__main__":
-    app.run(debug=True, host=args.HOST, port=args.PORT)
+    socketio.run(app)
