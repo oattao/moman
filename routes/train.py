@@ -34,7 +34,7 @@ def stoptraining():
         data = show_tabula(folder)
     else:
         data = None
-    return render_template('train_page.html', data=data, is_busy=False)
+    return render_template('train_page.html', data=data, train_status=0)
 
 @train.route('/changemodel', methods=['POST'])
 def changemodel():
@@ -68,20 +68,18 @@ def showpage():
     else:
         data = None
 
+    # set training status
+    train_status = 0   # no training, no need confirm
+
     # check if server is busy on training task
     if os.path.exists(os.path.join(MODEL_PATH, FLAG)):
-        is_busy = True
-    else:
-        is_busy = False
-
-    if os.path.exists(os.path.join(MODEL_PATH, NEED_CONFIRM)):
-        is_busy = True
-    else:
-        is_busy = False
+        train_status = 1 # is busy training model
+    elif os.path.exists(os.path.join(MODEL_PATH, NEED_CONFIRM)):
+        train_status = 2 # training done, need confirm
 
     return render_template('train_page.html',
-                               is_busy=is_busy,
-                               data=data)
+                            train_status=train_status,
+                            data=data)
 
 
 @train.route('/', methods=['POST'])
@@ -107,4 +105,4 @@ def trainmodel():
         os.system("start cmd.exe /c python train_process.py {} {} {} {}".format(
             model_name,image_folder, num_epochs, learning_rate))
 
-    return render_template('train_page.html', data=data, is_busy=True)
+    return render_template('train_page.html', data=data, train_status=1)

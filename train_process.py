@@ -73,12 +73,12 @@ generator = {'train': ImageGenerator(df=train_frame, label_col='Classes',
 # checkpoint callback
 checkpoint_path = os.path.join(MODEL_PATH, folder_name)
 checkpoint_dir = os.path.dirname(checkpoint_path)
-saving_callback = keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                   monitor='val_accuracy',
                                                   save_best_only=True,
                                                   verbose=1)
 # tensorboard callback
-tfboard_callback = keras.callbacks.TensorBoard(log_dir="tflog", update_freq='batch')
+# tfboard_callback = tf.keras.callbacks.TensorBoard(log_dir="tflog", update_freq='batch')
 
 
 # remote monitoring callback
@@ -88,7 +88,7 @@ monitor_callback = keras.callbacks.RemoteMonitor(root="http://localhost:8080",
 history = model.fit(x=generator['train'], validation_data=generator['test'],
                     validation_freq=1, epochs=num_epochs, verbose=1,
                     callbacks=[saving_callback,
-                               tfboard_callback,
+                               # tfboard_callback,
                                monitor_callback])
 history = history.history
 accuracy = round(100 * max(history['accuracy']), 2)

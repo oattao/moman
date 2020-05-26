@@ -28,7 +28,9 @@
 
                 <div style="width: 300px; display: inline-block; vertical-align: top;">
                     <p>Base model</p>
-                        <input type="radio" id="small" name="model" value="Small" checked>
+                        <input type="radio" id="tiny" name="model" value="Tiny" checked>
+                        <label for="tiny">Tiny</label><br>
+                        <input type="radio" id="small" name="model" value="Small">
                         <label for="small">Small</label><br>
                         <input type="radio" id="xception" name="model" value="Xception">
                         <label for="xception">Xception</label><br>
@@ -69,18 +71,25 @@
                     {% endif %}
                 </div>
             </div>
-            {% if is_busy is sameas false %}
+            {% if train_status == 0 %}
             <input id="btnTrain" type="submit" value="Start training"> <br>
             {% endif %}
             </form>
         </div>
 
         <div id="training" style="margin-left: 50px">
-            {% if is_busy is sameas true %}
+            {% if train_status == 1 %}
             <h2>Progress</h2>
-            <p class="warningtext">Server is training a model.</p>
-            <a href="{{ url_for('monitortraining') }}" target="_blank">View training processs</a>
+            <p class="warningtext">Model is being trained</p>
+            <a href="{{ url_for('monitortraining') }}" target="_blank">View processs</a>
             {% endif %}
+
+            {% if train_status == 2 %}
+            <h2>Progress</h2>
+            <p class="warningtext">Training done</p>
+            <a href="{{ url_for('monitortraining') }}" target="_blank">View result</a>
+            {% endif %}
+
         </div>
     </div>
 </body>

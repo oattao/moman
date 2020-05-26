@@ -39,7 +39,7 @@ def publish():
     payload = request.form.get('data')
     try:
         data = json.loads(payload)
-        # num_epochs = data['epoch']
+        num_epochs = data['epoch'] + 1
         loss = round(data['loss'], 2)
         val_loss = round(data['val_loss'], 2)
         accuracy = round(data['accuracy'] * 100, 2)
@@ -66,13 +66,13 @@ def publish():
             pickle.dump(history, f)
 
         # check if finish epoch
-        # with open(os.path.join(MODEL_PATH, FLAG), 'rb') as f:
-        #     n_epochs = pickle.load(f)['num_epochs']
+        with open(os.path.join(MODEL_PATH, FLAG), 'rb') as f:
+            n_epochs = pickle.load(f)['num_epochs']
 
-        # print('-'*100)
-        # print(n_epochs, num_epochs)
-        # if n_epochs == num_epochs:
-        #     socketio.emit('end', {'finish': 'ok'}, namespace="/monitortraining")
+        print('-'*100)
+        print(n_epochs, num_epochs)
+        if n_epochs == num_epochs:
+            socketio.emit('end', {'finish': 'ok'}, namespace="/monitortraining")
 
     except:
         return {'error': 'invalid payload'}

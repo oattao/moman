@@ -47,7 +47,7 @@
                 }
 
                 var chartLoss = new CanvasJS.Chart("lossHistory", {
-                    title: {text: "Loss history"},
+                    title: {text: "Loss"},
                     axisX: {title: "Epoch", interval: 1, minimum:0},
                     axisY: {title: "Loss value", minimum: 0, maximum: 10},
                     legend: {cursor: "pointter", fontSize: 16},
@@ -56,7 +56,7 @@
                 });
 
                 var chartAcc = new CanvasJS.Chart("accHistory", {
-                    title: {text: "Accuracy history"},
+                    title: {text: "Accuracy"},
                     axisX: {title: "Epoch", interval: 1, minimum: 0},
                     axisY: {title: "Accuracy (%)", minimum: 0, maximum: 100},
                     legend: {cursor: "pointter", fontSize: 16},
@@ -90,16 +90,16 @@
                 });
 
                 // //When finish training
-                // $(document).ready(function(){
-                //     var socket = io.connect('http://' + document.domain + ':' + location.port + '/monitortraining');
-                //     socket.on('end', function(msg) {
-                //         var rs = msg.finish;
-                //         console.log(rs);
-                //         if (rs == 'ok') {
-                //             location.reload(true);
-                //         }
-                //     })
-                // });
+                $(document).ready(function(){
+                    var socket = io.connect('http://' + document.domain + ':' + location.port + '/monitortraining');
+                    socket.on('end', function(msg) {
+                        var rs = msg.finish;
+                        console.log(rs);
+                        if (rs == 'ok') {
+                            location.reload(true);
+                        }
+                    })
+                });
 
             </script>
     </div>

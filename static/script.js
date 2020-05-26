@@ -12,8 +12,6 @@ function changeModel(command) {
 		console.log('Response from server:')
 		alert('Model is ' + command);
 	}
-	document.getElementById("resultPanel").style.display = "none";
-	document.getElementById("btnTrain").style.display = "block";
 }
 
 function showImage(event) {
