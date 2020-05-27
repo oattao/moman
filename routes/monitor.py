@@ -34,7 +34,6 @@ def monitortraining():
                                val_accuracy=val_accuracy)
 
     # check if need confirm
-    # if os.path.exists(os.path.join(MODEL_PATH, NEED_CONFIRM)):
     else:
         if os.path.exists(os.path.join(MODEL_PATH, LOG_FILE)):
             log = os.path.join(MODEL_PATH, LOG_FILE)

@@ -2,8 +2,10 @@ import os
 import pickle
 import json
 import argparse
+
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
+from gevent.pywsgi import WSGIServer
 
 from configs.server import HIST, MODEL_PATH, FLAG
 
@@ -27,7 +29,7 @@ app.register_blueprint(train)
 app.register_blueprint(monitor)
 app.register_blueprint(error)
 
-app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
+app.config.update(DEBUG=True)
 
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
@@ -74,4 +76,5 @@ def publish():
     return "OK"
 
 if __name__ == "__main__":
-    socketio.run(app)
+    server = WSGIServer((args.HOST, int(args.PORT)), app)
+    server.serve_forever()
