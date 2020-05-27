@@ -19,7 +19,7 @@
 
 	<div id="content" class="main">
 		<div style="margin-left: 50px">
-			<form action='/predict' method="POST">
+			<form action='/predict' method="POST" enctype="multipart/form-data">
 				<div id="showmodel">
 			   		{% if display %}
 					<p class="warningtext">No model.</p>

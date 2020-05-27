@@ -86,6 +86,4 @@ def test_disconnect():
     print('Client disconnected')    
 
 if __name__ == "__main__":
-    # server = WSGIServer((args.HOST, int(args.PORT)), app)
-    # server.serve_forever()
     socketio.run(app)

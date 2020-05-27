@@ -14,3 +14,7 @@ LOG_FILE = 'model_database.csv'
 FLAG = 'is_busy.pickle'   
 HIST = 'temp_hist.pickle'  
 NEED_CONFIRM = 'need_confirm.pickle'  
+
+# FIX HOST and PORT of API
+API_HOST = 'localhost'
+API_PORT = 8090

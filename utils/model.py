@@ -16,14 +16,24 @@ from configs.server import BASE_MODELS, MODEL_PATH, MODEL_LOG, LOG_FILE
 
 import pdb
 
-
-def load_model(models):
+def load_model(df_filepath):
     print('Loading models...')
     model_list = dict()
-    for name in models:
-        model_list[name] = tf.keras.models.load_model(
-            os.path.join(MODEL_PATH, '{}.h5'.format(name)))
-    print('All models loaded. Ready to serve.')
+    # read database
+    if os.path.exists(df_filepath):
+        df = pd.read_csv(df_filepath)
+        num_models = len(df)
+        if num_models > 0:
+            df = df[df['_is_confirmed'] == True]
+            names = df['ID'].values
+            for name in names:
+                model_list[name] = tf.keras.models.load_model(
+                    os.path.join(MODEL_PATH, '{}.h5'.format(name)))
+            print('All models loaded. Ready to serve.')
+        else:
+            print('No trained model.')    
+    else:
+        print('No trained model.')
     return model_list
 
 

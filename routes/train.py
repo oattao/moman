@@ -1,5 +1,7 @@
 from flask import Blueprint, request, render_template, jsonify
 import os
+import json
+import requests
 import signal
 import time
 import platform
@@ -9,6 +11,7 @@ import pandas as pd
 from utils.webservice import show_tabula
 from configs.image import DATA_PATH
 from configs.server import MODEL_PATH, LOG_FILE, FLAG, HIST, NEED_CONFIRM
+from configs.server import API_HOST, API_PORT
 import pdb
 
 train = Blueprint('train', __name__)
@@ -51,6 +54,13 @@ def changemodel():
         df.drop(idx, axis=0, inplace=True)
     if command == 'save':
         df.at[idx, '_is_confirmed'] = True
+        # load new model to the api
+        data = json.dumps({"signature_name": "serving_default", "model_name": model_name})
+        headers = {"content-type": "application/json"}
+        # Select Flask RESTapi serving
+        json_response = requests.post('http://{}:{}/add/{}'.format(API_HOST, API_PORT, model_name),
+                                      data=data, headers= headers)   
+
 
     df.to_csv(os.path.join(MODEL_PATH, LOG_FILE), index=None)
 
