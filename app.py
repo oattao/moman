@@ -16,9 +16,6 @@ from routes.train import train
 from routes.monitor import monitor
 from routes.error import error
 
-# start the api server
-os.system("python3 api_server.py")
-
 parser = argparse.ArgumentParser()
 parser.add_argument("HOST", type=str, help="web host")
 parser.add_argument("PORT", type=str, help="web port")
