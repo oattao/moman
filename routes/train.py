@@ -6,7 +6,6 @@ import platform
 import pickle
 import shutil
 import pandas as pd
-from utils.model import train_model
 from utils.webservice import show_tabula
 from configs.image import DATA_PATH
 from configs.server import MODEL_PATH, LOG_FILE, FLAG, HIST, NEED_CONFIRM
@@ -26,7 +25,8 @@ def stoptraining():
     if os.path.exists(hist_file):
         os.remove(os.path.join(MODEL_PATH, HIST))
     if os.path.exists(os.path.join(MODEL_PATH, model_id)):
-        shutil.rmtree(os.path.join(MODEL_PATH, model_id))
+        # shutil.rmtree(os.path.join(MODEL_PATH, model_id))
+        os.remove(os.path.join(MODEL_PATH, '{}.h5'.format(model_id)))
 
     folder = [name for name in os.listdir(DATA_PATH)\
                   if os.path.isdir(os.path.join(DATA_PATH, name))] 
@@ -44,9 +44,10 @@ def changemodel():
     df = pd.read_csv(os.path.join(MODEL_PATH, LOG_FILE))
     idx = df[df['ID'] == model_name].index
     if command == 'discard':
-        model_path = os.path.join(MODEL_PATH, model_name)
+        model_path = os.path.join(MODEL_PATH, '{}.h5'.format(model_name))
         # delete model folder
-        shutil.rmtree(model_path)
+        # shutil.rmtree(model_path)
+        os.remove(model_path)
         df.drop(idx, axis=0, inplace=True)
     if command == 'save':
         df.at[idx, '_is_confirmed'] = True

@@ -29,6 +29,7 @@ $(document).ready(function(){
         console.log(rs);
         if (rs == 'ok') {
             location.reload(true);
+            // console.log('ok');
         }
     })
 });

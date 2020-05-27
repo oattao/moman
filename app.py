@@ -29,7 +29,8 @@ app.register_blueprint(train)
 app.register_blueprint(monitor)
 app.register_blueprint(error)
 
-app.config.update(DEBUG=True)
+# app.config.update(DEBUG=True)
+app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
 
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
@@ -47,6 +48,7 @@ def publish():
                 'accuracy': accuracy, 'val_accuracy': val_accuracy}
 
         socketio.emit('newdata', {'data': data}, namespace="/monitortraining")
+        
 
         # Save history to HIST file
         hist_file = os.path.join(MODEL_PATH, HIST)
@@ -75,6 +77,15 @@ def publish():
         return {'error': 'invalid payload'}
     return "OK"
 
+@socketio.on('connect')
+def test_connect():
+    emit('my response', {'data': 'Connected'})    
+
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')    
+
 if __name__ == "__main__":
-    server = WSGIServer((args.HOST, int(args.PORT)), app)
-    server.serve_forever()
+    # server = WSGIServer((args.HOST, int(args.PORT)), app)
+    # server.serve_forever()
+    socketio.run(app)

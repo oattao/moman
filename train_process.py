@@ -3,11 +3,12 @@ import pickle
 import os
 import tensorflow as tf
 from datetime import datetime, date
-from utils.model import create_model, log_write, get_size
+from utils.model import create_model
+from utils.webservice import getsize_h5model, log_write
 from utils.data import create_dataframe, ImageGenerator
 from sklearn.model_selection import train_test_split
 
-from configs.server import MODEL_LOG, MODEL_PATH, LOG_FILE, FLAG, HIST, NEED_CONFIRM
+from configs.server import MODEL_PATH, LOG_FILE, FLAG, HIST, NEED_CONFIRM
 from configs.image import DATA_PATH
 import keras
 
@@ -69,7 +70,7 @@ generator = {'train': ImageGenerator(df=train_frame, label_col='Classes',
                                     classes=classes, batch_size=batch_size)}
 
 # checkpoint callback
-checkpoint_path = os.path.join(MODEL_PATH, folder_name)
+checkpoint_path = os.path.join(MODEL_PATH, '{}.h5'.format(folder_name))
 checkpoint_dir = os.path.dirname(checkpoint_path)
 saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                   monitor='val_accuracy',
@@ -98,7 +99,7 @@ _training_date = today
 _training_starttime = time_now
 _training_stoptime = datetime.now().strftime("%H-%M-%S")
 # get size of model
-_size = get_size(checkpoint_path)
+_size = getsize_h5model(checkpoint_path)
 m1 = 1024 * 1024
 if _size > m1:
     _size = '{} mb'.format(round(_size / m1), 2)

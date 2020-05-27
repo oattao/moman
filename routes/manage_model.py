@@ -21,7 +21,8 @@ def showpage():
 
         # delete saved model folder
         for folder in del_idx:
-            shutil.rmtree(os.path.join(MODEL_PATH, folder))                   
+            # shutil.rmtree(os.path.join(MODEL_PATH, folder))                   
+            os.remove(os.path.join(MODEL_PATH, '{}.h5'.format(folder)))
         # delete corresponding row in csv file            
         del_idx = df[df['ID'].isin(del_idx)].index
         df.drop(del_idx, axis=0, inplace=True)                

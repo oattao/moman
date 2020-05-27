@@ -1,4 +1,9 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, flash
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+from wtforms import SubmitField
+
 import os
 import pandas as pd
 from utils.model import load_model
@@ -8,12 +13,19 @@ from configs.server import MODEL_PATH, UPLOAD_FOLDER, LOG_FILE
 
 predict = Blueprint('predict', __name__)
 
+# https://gist.github.com/greyli/ca74d71f13c52d089a8da8d2b758d519
+class UploadForm(FlaskForm):
+    photo = FileField(validators=[FileAllowed(photos, 'Image Only!'), FileRequired('Choose a file!')])
+    submit = SubmitField('Upload')
+
 model_list = None
 import pdb
 
 @predict.route('/predict', methods=['GET', 'POST'])
 def showpage():
     global model_list
+
+    form = UploadForm()
     # load trained model
     # check if model database is exist
     if not os.path.exists(os.path.join(MODEL_PATH, LOG_FILE)):
