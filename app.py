@@ -18,7 +18,7 @@ from routes.error import error
 
 parser = argparse.ArgumentParser()
 parser.add_argument("HOST", type=str, help="web host")
-parser.add_argument("PORT", type=str, help="web port")
+parser.add_argument("PORT", type=int, help="web port")
 args = parser.parse_args()
 
 app = Flask(__name__)
@@ -30,7 +30,7 @@ app.register_blueprint(monitor)
 app.register_blueprint(error)
 
 # app.config.update(DEBUG=True)
-app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
+# app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
 
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
@@ -75,15 +75,9 @@ def publish():
 
     except:
         return {'error': 'invalid payload'}
-    return "OK"
-
-# @socketio.on('connect')
-# def test_connect():
-#     emit('my response', {'data': 'Connected'})    
-
-# @socketio.on('disconnect')
-# def test_disconnect():
-#     print('Client disconnected')    
+    return "OK"    
 
 if __name__ == "__main__":
-    socketio.run(app)
+    # start the api server
+    # os.system("start cmd.exe /c python api_server.py")
+    socketio.run(app, host=args.HOST, port=args.PORT, debug=True)

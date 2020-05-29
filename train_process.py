@@ -81,7 +81,7 @@ saving_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
 
 
 # remote monitoring callback
-monitor_callback = keras.callbacks.RemoteMonitor(root="http://localhost:8080",
+monitor_callback = keras.callbacks.RemoteMonitor(root="http://10.10.54.121:8080",
                                                  path='/monitortraining')
 
 history = model.fit(x=generator['train'], validation_data=generator['test'],

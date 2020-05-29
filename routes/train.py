@@ -115,5 +115,8 @@ def trainmodel():
     else:
         os.system("start cmd.exe /c python train_process.py {} {} {} {}".format(
             model_name,image_folder, num_epochs, learning_rate))
+    # Fake
+    import time
+    time.sleep(2)
 
     return render_template('train_page.html', data=data, train_status=1)

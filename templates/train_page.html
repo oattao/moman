@@ -30,16 +30,12 @@
                     <p>Base model</p>
                         <input type="radio" id="tiny" name="model" value="Tiny" checked>
                         <label for="tiny">Tiny</label><br>
-                        <input type="radio" id="small" name="model" value="Small">
-                        <label for="small">Small</label><br>
                         <input type="radio" id="teachable" name="model" value="Teachable_machine">
                         <label for="small">Teachable machine</label><br>
                         <input type="radio" id="xception" name="model" value="Xception">
                         <label for="xception">Xception</label><br>
                         <input type="radio" id="mobilenet" name="model" value="Mobilenet">
                         <label for="mobilenet">Mobilenet</label><br>
-                        <input type="radio" id="simple" name="model" value="Simple">
-                        <label for="simple">Simple</label>
                 </div>
 
                 <div class="emptydiv"></div>
@@ -83,7 +79,7 @@
             {% if train_status == 1 %}
             <h2>Progress</h2>
             <p class="warningtext">Model is being trained</p>
-            <a href="{{ url_for('monitor.monitortraining') }}" target="_blank">View processs</a>
+            <a href="{{ url_for('monitor.monitortraining') }}">View processs</a>
             {% endif %}
 
             {% if train_status == 2 %}
