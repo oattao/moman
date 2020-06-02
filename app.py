@@ -29,9 +29,6 @@ app.register_blueprint(train)
 app.register_blueprint(monitor)
 app.register_blueprint(error)
 
-# app.config.update(DEBUG=True)
-# app.config.update(DEBUG=True, SERVER_NAME ="{}:{}".format(args.HOST, args.PORT))
-
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
 @app.route("/monitortraining", methods=['POST'])
