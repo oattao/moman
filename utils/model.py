@@ -37,7 +37,7 @@ def load_model(df_filepath):
     return model_list
 
 
-def create_model(model_name, n_outs):
+def create_model(model_name, n_outs, learning_rate=0.0001):
     if model_name == 'Teachable_machine':
         # read the teachable machine
         base_model = tf.keras.models.load_model(os.path.join('.', 'utils', 'base_model.h5'))
@@ -97,8 +97,8 @@ def create_model(model_name, n_outs):
                                            weights='imagenet'),
             GlobalAveragePooling2D(),
             Dense(n_outs, activation='softmax')])
-
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
-    model.compile(optimizer='adam', loss=loss, metrics=['accuracy'])
+    model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
     return model

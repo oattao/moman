@@ -11,7 +11,7 @@ from PIL import Image, ImageOps
 
 from utils.image import load_image
 from configs.image import IMAGE_FILE_EXTENSIONS, IMAGE_DATAFRAME_COLS, \
-                         IMAGE_SIZE1, IMAGE_SIZE2
+                         IMAGE_SIZE1, IMAGE_SIZE2, CLASSES
 
 def create_dataframe(data_dir, classes):
     cols = IMAGE_DATAFRAME_COLS
@@ -90,3 +90,35 @@ class ImageGenerator(Sequence):
         x = np.array(x)
         y = np.array(y)
         return x, y, [None]
+
+def get_sample(file_path, image_size=IMAGE_SIZE2, augumentation=False):
+    # get label
+    parts = tf.strings.split(file_path, os.path.sep)
+    # the second to last is the class-directory
+    label = parts[-2] == CLASSES
+
+    # get image
+    image_string = tf.io.read_file(file_path)
+    image = tf.image.decode_image(image_string, channels=3, expand_animations=False)
+    if augumentation:
+        image = tf.image.random_contrast(image, lower=0.1, upper=0.6)
+        image = tf.image.random_brightness(image, max_delta=0.5)
+    image = tf.image.resize(image, image_size)
+    image = (image / 127.5) - 1
+
+    return image, label
+
+def config_batch(ds, cache=True, shuffle_buffer_size=100, batch_size=8):
+    if cache:
+        if isinstance(cache, str):
+            ds = ds.cache(cache)
+        else:
+            ds = ds.cache()
+
+    ds = ds.shuffle(buffer_size=shuffle_buffer_size)
+    ds = ds.repeat()
+    ds = ds.batch(batch_size)
+
+    AUTOTUNE = tf.data.experimental.AUTOTUNE
+    ds = ds.prefetch(buffer_size=AUTOTUNE)
+    return ds
