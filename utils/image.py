@@ -1,6 +1,21 @@
+import os
+import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageOps
 from configs.image import IMAGE_SIZE2, IMAGE_FILE_EXTENSIONS
+
+def centralize(image_path, x, y, new_size, new_path):
+	listfile = os.listdir(os.path.join(*image_path))
+	for filename in listfile:
+		img = plt.imread(os.path.join(*image_path, filename))
+		old_size = img.shape[0]
+		x_start = (new_size - x) // 2
+		y_start = (new_size - 2*y) // 2
+		new_img = np.zeros(shape=(new_size, new_size, 3), dtype=np.int32)
+		new_img[x_start:x_start+x, y_start:y_start+y, :] = img[:x, :y, :]
+		new_img[x_start:x_start+x, y_start+y:y_start+2*y, :] = img[:x, 256-y:, :]
+		new_img = new_img / 255.
+		plt.imsave(os.path.join(*new_path, filename), new_img)
 
 def load_image(image_path, to_4d, normalized=True, image_size=IMAGE_SIZE2):
     image = Image.open(image_path).convert('RGB')

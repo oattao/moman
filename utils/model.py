@@ -37,7 +37,7 @@ def load_model(df_filepath):
     return model_list
 
 
-def create_model(model_name, n_outs, learning_rate=0.0001):
+def create_model(model_name, n_outs, input_shape=(224, 224, 3), learning_rate=0.0001):
     if model_name == 'Teachable_machine':
         # read the teachable machine
         base_model = tf.keras.models.load_model(os.path.join('.', 'utils', 'base_model.h5'))
@@ -49,32 +49,27 @@ def create_model(model_name, n_outs, learning_rate=0.0001):
         model = Sequential([Flatten(), Dense(n_outs, activation='softmax')])
     if model_name == 'Small':
         model = Sequential([
-            Conv2D(4, 3, padding='same', input_shape=IMAGE_SIZE3),
+            Conv2D(4, 3, padding='same', activation='relu', input_shape=input_shape),
             BatchNormalization(),
-            Activation('relu'),
             MaxPooling2D(),
             Flatten(),
             Dense(n_outs, activation='softmax')])
     if model_name == 'Simple':
         model = Sequential([
-            Conv2D(8, 3, padding='same', input_shape=IMAGE_SIZE3),
+            Conv2D(8, 3, padding='same', activation='relu', input_shape=input_shape),
             BatchNormalization(),
-            Activation('relu'),
             MaxPooling2D(),
 
-            Conv2D(16, 3, padding='same'),
+            Conv2D(16, 3, padding='same', activation='relu'),
             BatchNormalization(),
-            Activation('relu'),
             MaxPooling2D(),
 
-            Conv2D(32, 3, padding='same'),
+            Conv2D(32, 3, padding='same', activation='relu'),
             BatchNormalization(),
-            Activation('relu'),
             MaxPooling2D(),
 
-            Conv2D(64, 3, padding='same'),
+            Conv2D(64, 3, padding='same', activation='relu'),
             BatchNormalization(),
-            Activation('relu'),
             MaxPooling2D(),
 
             GlobalAveragePooling2D(),
@@ -84,7 +79,7 @@ def create_model(model_name, n_outs, learning_rate=0.0001):
 
     if model_name == 'Mobilenet':
         model = Sequential([
-            tf.keras.applications.MobileNetV2(input_shape=IMAGE_SIZE3,
+            tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                               include_top=False,
                                               weights='imagenet'),
             GlobalAveragePooling2D(),
@@ -92,7 +87,7 @@ def create_model(model_name, n_outs, learning_rate=0.0001):
 
     if model_name == 'Xception':
         model = Sequential([
-            tf.keras.applications.Xception(input_shape=IMAGE_SIZE3,
+            tf.keras.applications.Xception(input_shape=input_shape,
                                            include_top=False,
                                            weights='imagenet'),
             GlobalAveragePooling2D(),
