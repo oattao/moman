@@ -11,11 +11,23 @@ def centralize(image_path, x, y, new_size, new_path):
 		old_size = img.shape[0]
 		x_start = (new_size - x) // 2
 		y_start = (new_size - 2*y) // 2
-		new_img = np.zeros(shape=(new_size, new_size, 3), dtype=np.int32)
+		new_img = np.zeros(shape=(new_size, new_size, 3), dtype=img.dtype)
 		new_img[x_start:x_start+x, y_start:y_start+y, :] = img[:x, :y, :]
-		new_img[x_start:x_start+x, y_start+y:y_start+2*y, :] = img[:x, 256-y:, :]
-		new_img = new_img / 255.
+		new_img[x_start:x_start+x, y_start+y:y_start+2*y, :] = img[:x, old_size-y:, :]
 		plt.imsave(os.path.join(*new_path, filename), new_img)
+
+
+def squeeze(image_path, x, y, new_path):
+	listfile = os.listdir(os.path.join(*image_path))
+	for filename in listfile:
+		img = plt.imread(os.path.join(*image_path, filename))
+		old_size = img.shape[0]
+		part_1 = img[:x, :y, :]
+		part_2 = img[:x, old_size-y:, :]
+		new_img = np.concatenate((part_1, part_2), axis=1)
+		plt.imsave(os.path.join(*new_path, filename), new_img)
+ 		
+	
 
 def load_image(image_path, to_4d, normalized=True, image_size=IMAGE_SIZE2):
     image = Image.open(image_path).convert('RGB')
