@@ -4,6 +4,24 @@ import numpy as np
 from PIL import Image, ImageOps
 from configs.image import IMAGE_SIZE2, IMAGE_FILE_EXTENSIONS
 
+def resplit(original_path, original_label, x, y, new_size, new_path, label_left, label_right):
+	listfile = os.listdir(os.path.join(*original_path, original_label))
+	for filename in listfile:
+		img = plt.imread(os.path.join(*original_path, original_label, filename))
+		old_size = img.shape[0]
+
+		left_img = np.zeros(shape=(new_size, new_size, 3), dtype=img.dtype)
+		right_img = np.zeros(shape=(new_size, new_size, 3), dtype=img.dtype)
+
+		x_start = (new_size - x) // 2
+		y_start = (new_size - y) // 2
+
+		left_img[x_start: x_start+x, y_start: y_start+y, :] = img[:x, :y, :]
+		right_img[x_start: x_start+x, y_start: y_start+y, :] = np.flip(img[:x, old_size-y:, :], axis=1)
+
+		plt.imsave(os.path.join(*new_path, label_left, 'left_{}'.format(filename)), left_img)
+		plt.imsave(os.path.join(*new_path, label_right, 'right_{}'.format(filename)), right_img)		
+
 def centralize(image_path, x, y, new_size, new_path):
 	listfile = os.listdir(os.path.join(*image_path))
 	for filename in listfile:
