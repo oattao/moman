@@ -37,7 +37,7 @@ def load_model(df_filepath):
     return model_list
 
 
-def create_model(model_name, n_outs, input_shape=(224, 224, 3), learning_rate=0.0001):
+def create_model(model_name, n_outs, input_shape=(224, 224, 3), learning_rate=0.0001, pre_train=True):
     if model_name == 'Teachable_machine':
         # read the teachable machine
         base_model = tf.keras.models.load_model(os.path.join('.', 'utils', 'base_model.h5'))
@@ -72,16 +72,25 @@ def create_model(model_name, n_outs, input_shape=(224, 224, 3), learning_rate=0.
             BatchNormalization(),
             MaxPooling2D(),
 
+            # Conv2D(128, 3, padding='same', activation='relu'),
+            # BatchNormalization(),
+            # MaxPooling2D(),
+
             GlobalAveragePooling2D(),
             Flatten(),
             Dense(64, activation='relu'),
             Dense(n_outs, activation='softmax')])
 
+    if pre_train:
+        weights = 'imagenet'
+    else:
+        weights = None
+
     if model_name == 'Mobilenet':
         model = Sequential([
             tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                               include_top=False,
-                                              weights='imagenet'),
+                                              weights=weights),
             GlobalAveragePooling2D(),
             Dense(n_outs, activation='softmax')])
 
@@ -89,7 +98,7 @@ def create_model(model_name, n_outs, input_shape=(224, 224, 3), learning_rate=0.
         model = Sequential([
             tf.keras.applications.Xception(input_shape=input_shape,
                                            include_top=False,
-                                           weights='imagenet'),
+                                           weights=weights),
             GlobalAveragePooling2D(),
             Dense(n_outs, activation='softmax')])
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
