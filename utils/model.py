@@ -103,6 +103,6 @@ def create_model(model_name, n_outs, input_shape=(224, 224, 3), learning_rate=0.
             Dense(n_outs, activation='softmax')])
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     loss = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
-    model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+    model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy', 'acc', 'categorical_accuracy'])
 
     return model
